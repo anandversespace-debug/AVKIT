@@ -1,3 +1,5 @@
+import type { EnvironmentDetails } from "./environment.js";
+
 export type Framework = "nextjs" | "vite-react" | "express" | "node" | "unknown";
 export type Language = "javascript" | "typescript";
 export type PackageManager = "npm" | "pnpm" | "yarn" | "bun" | "unknown";
@@ -14,4 +16,5 @@ export interface ProjectContext {
   lockfiles: string[];
   detectedTools: string[];
   hasGit: boolean;
+  environment: EnvironmentDetails;
 }

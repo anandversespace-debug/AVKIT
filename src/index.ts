@@ -1,6 +1,7 @@
 export * from "./core/project/context.js";
 export * from "./core/project/detector.js";
 export * from "./core/project/package-manager.js";
+export * from "./core/project/environment.js";
 export * from "./core/diagnostics/types.js";
 export * from "./core/diagnostics/registry.js";
 export * from "./core/diagnostics/engine.js";

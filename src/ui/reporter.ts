@@ -15,11 +15,18 @@ export function formatInfo(context: ProjectContext, options: { json?: boolean } 
         lockfiles: context.lockfiles,
         detectedTools: context.detectedTools,
         hasGit: context.hasGit,
+        environment: context.environment,
       },
       null,
       2
     );
   }
+
+  const env = context.environment;
+  const osInfo = `${env.platform} (${env.arch})`;
+  const ciInfo = env.isCI ? pc.magenta(`${env.ciProvider || "CI Environment"}`) : pc.dim("Local (Non-CI)");
+  const monorepoInfo = env.isMonorepo ? pc.green(env.monorepoType || "Monorepo detected") : pc.dim("Single package");
+  const nodeMgrInfo = env.nodeManager !== "system" ? pc.cyan(env.nodeManager) : pc.dim("system default");
 
   const lines: string[] = [
     pc.bold("AVKit Project Information"),
@@ -29,7 +36,10 @@ export function formatInfo(context: ProjectContext, options: { json?: boolean } 
     `  ${pc.cyan("Framework:")}       ${formatFramework(context.framework)}`,
     `  ${pc.cyan("Language:")}        ${context.language === "typescript" ? pc.blue("TypeScript") : pc.yellow("JavaScript")}`,
     `  ${pc.cyan("Package Manager:")} ${context.packageManager} ${context.lockfiles.length > 0 ? pc.dim(`(${context.lockfiles.join(", ")})`) : pc.red("(no lockfile)")}`,
-    `  ${pc.cyan("Node Version:")}    ${context.nodeVersion}`,
+    `  ${pc.cyan("Node Version:")}    ${context.nodeVersion} (${nodeMgrInfo})`,
+    `  ${pc.cyan("Operating System:")}${osInfo}`,
+    `  ${pc.cyan("CI Runtime:")}      ${ciInfo}`,
+    `  ${pc.cyan("Workspace:")}       ${monorepoInfo}`,
     `  ${pc.cyan("Git:")}             ${context.hasGit ? pc.green("Initialized") : pc.dim("Not detected")}`,
     `  ${pc.cyan("Tooling:")}         ${context.detectedTools.length > 0 ? context.detectedTools.join(", ") : pc.dim("None detected")}`,
   ];

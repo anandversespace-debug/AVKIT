@@ -83,6 +83,16 @@ describe("Phase 2 Diagnostic Rules Suite", () => {
       lockfiles: [],
       detectedTools: ["husky"],
       hasGit: true,
+      environment: {
+        platform: "windows" as const,
+        arch: "x64",
+        osRelease: "10.0",
+        isCI: false,
+        ciProvider: null,
+        nodeManager: "system" as const,
+        isInteractive: true,
+        isMonorepo: false,
+      },
     };
 
     const diags = await gitHooksConfigRule.check(mockCtx);

@@ -32,4 +32,15 @@ describe("Project Detector", () => {
     expect(ctx.lockfiles).toContain("pnpm-lock.yaml");
     expect(ctx.lockfiles.length).toBe(2);
   });
+
+  it("auto-detects environment details (OS, architecture, runtime)", async () => {
+    const dir = path.resolve("tests/fixtures/clean-node");
+    const ctx = await detectProjectContext(dir);
+
+    expect(ctx.environment).toBeDefined();
+    expect(["windows", "macos", "linux", "unknown"]).toContain(ctx.environment.platform);
+    expect(ctx.environment.arch).toBe(process.arch);
+    expect(typeof ctx.environment.isCI).toBe("boolean");
+    expect(typeof ctx.environment.nodeManager).toBe("string");
+  });
 });

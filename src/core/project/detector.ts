@@ -1,6 +1,7 @@
 import path from "node:path";
 import { fileExists, readFileSafe, safeResolvePath } from "../../infrastructure/filesystem.js";
 import { analyzePackageManager } from "./package-manager.js";
+import { detectEnvironment } from "./environment.js";
 import type { Framework, Language, ProjectContext } from "./context.js";
 
 /**
@@ -86,6 +87,9 @@ export async function detectProjectContext(targetDir: string): Promise<ProjectCo
   // 6. Git presence
   const hasGit = fileExists(path.join(rootDirectory, ".git"));
 
+  // 7. Auto-detect environment details (OS, architecture, CI, Node Manager, Monorepo)
+  const environment = detectEnvironment(rootDirectory, packageJson);
+
   return {
     rootDirectory,
     projectName,
@@ -98,5 +102,6 @@ export async function detectProjectContext(targetDir: string): Promise<ProjectCo
     lockfiles: pmAnalysis.lockfiles,
     detectedTools,
     hasGit,
+    environment,
   };
 }
