@@ -1,0 +1,55 @@
+{
+  "name": "@anandverse/avkit",
+  "version": "0.1.0",
+  "description": "Cross-tool diagnosis and safe remediation for JavaScript and TypeScript projects",
+  "type": "module",
+  "bin": {
+    "avkit": "./dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "cli",
+    "doctor",
+    "diagnostics",
+    "fix",
+    "linter",
+    "configuration",
+    "developer-tools"
+  ],
+  "author": "AnandVerse Technologies",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.3.3",
+    "commander": "^13.1.0",
+    "jsonc-parser": "^3.3.1",
+    "picocolors": "^1.1.1",
+    "semver": "^7.7.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.5",
+    "@types/semver": "^7.5.8",
+    "@vitest/coverage-v8": "^3.2.7",
+    "tsup": "^8.4.0",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.7"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "missing-lint-staged-app",
+  "version": "1.0.0",
+  "devDependencies": {
+    "lint-staged": "^15.2.0"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "script-binary-missing-app",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "nonexistent-bundler build",
+    "test": "node test.js"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "missing-prettier-app",
+  "version": "1.0.0",
+  "devDependencies": {
+    "prettier": "^3.2.0"
+  }
+}

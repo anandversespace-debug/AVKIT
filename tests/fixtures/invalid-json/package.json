@@ -1,0 +1,5 @@
+{
+  "name": "invalid-json-app",
+  "version": "1.0.0",
+  // Syntax error here
+  "unclosed": 
