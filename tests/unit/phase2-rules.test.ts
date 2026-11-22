@@ -1,4 +1,5 @@
 import path from "node:path";
+import fs from "node:fs/promises";
 import { describe, it, expect } from "vitest";
 import { detectProjectContext } from "../../src/core/project/detector.js";
 import { packageManagerMismatchRule } from "../../src/rules/dependencies/manager-mismatch.js";
@@ -32,12 +33,20 @@ describe("Phase 2 Diagnostic Rules Suite", () => {
 
   it("SCRIPT_BINARY_MISSING flags script calling nonexistent binary", async () => {
     const dir = path.resolve("tests/fixtures/script-binary-missing");
-    const ctx = await detectProjectContext(dir);
-    const diags = await scriptBinaryMissingRule.check(ctx);
+    
+    // Test without node_modules
+    const ctxWithoutModules = await detectProjectContext(dir);
+    const diags1 = await scriptBinaryMissingRule.check(ctxWithoutModules);
+    expect(diags1.length).toBe(1);
+    expect(diags1[0].id).toBe("SCRIPT_BINARY_MISSING");
+    expect(diags1[0].description).toContain("nonexistent-bundler");
 
-    expect(diags.length).toBe(1);
-    expect(diags[0].id).toBe("SCRIPT_BINARY_MISSING");
-    expect(diags[0].description).toContain("nonexistent-bundler");
+    // Test with node_modules directory created
+    await fs.mkdir(path.join(dir, "node_modules", ".bin"), { recursive: true });
+    const ctxWithModules = await detectProjectContext(dir);
+    const diags2 = await scriptBinaryMissingRule.check(ctxWithModules);
+    expect(diags2.length).toBe(1);
+    expect(diags2[0].id).toBe("SCRIPT_BINARY_MISSING");
   });
 
   it("ENV_EXAMPLE_MISSING identifies missing env keys without exposing values", async () => {

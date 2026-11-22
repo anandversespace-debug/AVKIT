@@ -1,5 +1,5 @@
 import path from "node:path";
-import { fileExists, safeResolvePath } from "../../infrastructure/filesystem.js";
+import { fileExists } from "../../infrastructure/filesystem.js";
 import type { ProjectContext } from "../../core/project/context.js";
 import type { Diagnostic, DiagnosticRule } from "../../core/diagnostics/types.js";
 
@@ -30,10 +30,11 @@ export const scriptBinaryMissingRule: DiagnosticRule = {
 
     const nodeModulesBin = path.join(context.rootDirectory, "node_modules", ".bin");
     const nodeModulesExist = fileExists(path.join(context.rootDirectory, "node_modules"));
-    if (!nodeModulesExist) {
-      // If node_modules does not exist at all, that is a broader missing install state
-      return [];
-    }
+
+    const deps = {
+      ...((pkg.dependencies as Record<string, string>) || {}),
+      ...((pkg.devDependencies as Record<string, string>) || {}),
+    };
 
     const diagnostics: Diagnostic[] = [];
     const scripts = pkg.scripts as Record<string, string>;
@@ -47,7 +48,6 @@ export const scriptBinaryMissingRule: DiagnosticRule = {
 
       // Handle common wrappers like 'cross-env FOO=bar binary'
       if (binaryName === "cross-env" && tokens.length > 2) {
-        // find next token without '='
         for (let i = 1; i < tokens.length; i++) {
           if (!tokens[i].includes("=")) {
             binaryName = tokens[i];
@@ -60,20 +60,26 @@ export const scriptBinaryMissingRule: DiagnosticRule = {
         continue;
       }
 
-      // Check if binary exists in node_modules/.bin (POSX or Windows .cmd / .ps1)
-      const possiblePaths = [
-        path.join(nodeModulesBin, binaryName),
-        path.join(nodeModulesBin, `${binaryName}.cmd`),
-        path.join(nodeModulesBin, `${binaryName}.ps1`),
-      ];
+      let binaryFound = false;
 
-      const binaryFound = possiblePaths.some((p) => {
-        try {
-          return fileExists(p);
-        } catch {
-          return false;
-        }
-      });
+      if (nodeModulesExist) {
+        const possiblePaths = [
+          path.join(nodeModulesBin, binaryName),
+          path.join(nodeModulesBin, `${binaryName}.cmd`),
+          path.join(nodeModulesBin, `${binaryName}.ps1`),
+        ];
+
+        binaryFound = possiblePaths.some((p) => {
+          try {
+            return fileExists(p);
+          } catch {
+            return false;
+          }
+        });
+      } else {
+        // If node_modules does not exist, check if binary is declared in project dependencies
+        binaryFound = Boolean(deps[binaryName]);
+      }
 
       if (!binaryFound) {
         diagnostics.push({
